@@ -1,0 +1,224 @@
+---
+import Icon from "./Icon.astro";
+import { products } from "../data/products";
+---
+
+<header class="header catalog-nav wrap flex items-center justify-between">
+  <a class="logo" href="/" aria-label="KYFT ana sayfa">kyft<span>®</span></a>
+  <nav aria-label="Ana menü" class="desktop-nav flex items-center gap-9">
+    <a href="/#new-drop">New Drop</a>
+    <details class="nav-menu">
+      <summary>Üst giyim</summary><div class="nav-submenu">
+        <a href="/kategori/t-shirt">T-shirt</a><a href="/kategori/gomlek"
+          >Gömlek</a
+        ><a href="/kategori/hoodie">Hoodie</a><a href="/kategori/sweatshirt"
+          >Sweatshirt</a
+        ><a href="/kategori/kazak">Kazak</a>
+      </div>
+    </details>
+    <details class="nav-menu">
+      <summary>Alt giyim</summary><div class="nav-submenu">
+        <a href="/kategori/pantolon">Pantolon</a><a href="/kategori/esofman"
+          >Eşofman</a
+        ><a href="/kategori/sort">Şort</a>
+      </div>
+    </details>
+  </nav>
+  <div class="flex items-center gap-6">
+    <button class="icon-button catalog-search-open" aria-label="Ürün ara"
+      ><Icon name="search" /></button
+    >
+    <a class="icon-button" href="/hesap" aria-label="Üye girişi veya üyelik"
+      ><Icon name="user" /></a
+    >
+    <button
+      class="bag-button flex items-center gap-2"
+      aria-label="Sepeti aç"
+      data-catalog-cart-open
+      ><Icon name="shopping-bag" /><span class="catalog-cart-count">0</span
+      ></button
+    >
+    <button
+      class="mobile-menu icon-button catalog-menu-toggle"
+      aria-label="Menüyü aç veya kapat"
+      aria-expanded="false"><Icon name="menu-2" /></button
+    >
+  </div>
+</header>
+<nav class="catalog-mobile-nav" aria-label="Mobil menü" hidden>
+  <a href="/hesap">Giriş yap / Üye ol</a><a href="/#new-drop">New Drop</a><a
+    href="/kategori/t-shirt">T-shirt</a
+  ><a href="/kategori/gomlek">Gömlek</a><a href="/kategori/hoodie">Hoodie</a><a
+    href="/kategori/sweatshirt">Sweatshirt</a
+  ><a href="/kategori/kazak">Kazak</a><a href="/kategori/pantolon">Pantolon</a
+  ><a href="/kategori/esofman">Eşofman</a><a href="/kategori/sort">Şort</a>
+</nav>
+
+<dialog
+  class="catalog-dialog catalog-search-dialog"
+  aria-labelledby="catalog-search-title"
+>
+  <div class="catalog-dialog-head">
+    <h2 id="catalog-search-title">Ürün ara</h2><button
+      data-catalog-close
+      aria-label="Aramayı kapat">×</button
+    >
+  </div>
+  <label
+    ><span class="sr-only">Arama</span><input
+      class="catalog-global-search"
+      type="search"
+      placeholder="Ne aramıştınız?"
+      autocomplete="off"
+    /></label
+  >
+  <div class="catalog-search-results">
+    {
+      products.map((product) => (
+        <a
+          href={`/urun/${product.id}`}
+          data-global-result
+          data-search-text={`${product.name} ${product.category}`.toLowerCase()}
+        >
+          <>
+            <img src={`/images/${product.image}.webp`} alt="" />
+            <span>
+              {product.name}
+              <small>{product.category}</small>
+            </span>
+          </>
+        </a>
+      ))
+    }
+  </div>
+  <p class="catalog-search-empty" hidden>Ürün bulunamadı.</p>
+</dialog>
+<dialog
+  class="catalog-dialog catalog-cart-dialog"
+  aria-labelledby="catalog-cart-title"
+>
+  <div class="catalog-dialog-head">
+    <h2 id="catalog-cart-title">Sepetin</h2><button
+      data-catalog-close
+      aria-label="Sepeti kapat">×</button
+    >
+  </div>
+  <div class="catalog-cart-items"></div>
+  <div class="catalog-cart-total">
+    <span>Ara toplam</span><strong>$0.00</strong>
+  </div>
+</dialog>
+
+<script is:inline define:vars={{ catalogProducts: products }}>
+  const details = document.querySelectorAll(".catalog-nav .nav-menu");
+  details.forEach((menu) =>
+    menu.addEventListener("toggle", () => {
+      if (menu.open)
+        details.forEach((other) => {
+          if (other !== menu) other.open = false;
+        });
+    }),
+  );
+  const toggle = document.querySelector(".catalog-menu-toggle");
+  const mobile = document.querySelector(".catalog-mobile-nav");
+  toggle?.addEventListener("click", () => {
+    if (!mobile) return;
+    mobile.hidden = !mobile.hidden;
+    toggle.setAttribute("aria-expanded", String(!mobile.hidden));
+  });
+  const searchDialog = document.querySelector(".catalog-search-dialog");
+  const cartDialog = document.querySelector(".catalog-cart-dialog");
+  document
+    .querySelector(".catalog-search-open")
+    ?.addEventListener("click", () => searchDialog?.showModal());
+  document
+    .querySelector("[data-catalog-cart-open]")
+    ?.addEventListener("click", () => {
+      renderCatalogCart();
+      cartDialog?.showModal();
+    });
+  document
+    .querySelectorAll("[data-catalog-close]")
+    .forEach((button) =>
+      button.addEventListener("click", () => button.closest("dialog")?.close()),
+    );
+  document
+    .querySelector(".catalog-global-search")
+    ?.addEventListener("input", (event) => {
+      const query = event.target.value.trim().toLowerCase();
+      let visible = 0;
+      document.querySelectorAll("[data-global-result]").forEach((item) => {
+        const show = item.dataset.searchText.includes(query);
+        item.hidden = !show;
+        if (show) visible++;
+      });
+      document.querySelector(".catalog-search-empty").hidden = visible > 0;
+    });
+  function readCatalogBag() {
+    try {
+      const value = JSON.parse(localStorage.getItem("kyft-bag") || "[]");
+      return Array.isArray(value)
+        ? value.filter(
+            (entry) =>
+              entry &&
+              catalogProducts.some((product) => product.id === entry.id) &&
+              ["XS", "S", "M", "L", "XL"].includes(entry.size) &&
+              Number.isInteger(entry.quantity) &&
+              entry.quantity > 0 &&
+              entry.quantity < 100,
+          )
+        : [];
+    } catch {
+      return [];
+    }
+  }
+  function escapeCatalogHtml(value) {
+    return String(value).replace(
+      /[&<>"']/g,
+      (character) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[character],
+    );
+  }
+  function renderCatalogCart() {
+    const bag = readCatalogBag();
+    const count = bag.reduce(
+      (sum, item) => sum + (Number(item.quantity) || 0),
+      0,
+    );
+    document
+      .querySelectorAll(".catalog-cart-count")
+      .forEach((node) => (node.textContent = String(count)));
+    const items = document.querySelector(".catalog-cart-items");
+    let total = 0;
+    if (items)
+      items.innerHTML = bag.length
+        ? bag
+            .map((entry, index) => {
+              const product = catalogProducts.find(
+                (item) => item.id === entry.id,
+              );
+              if (!product) return "";
+              total += product.price * entry.quantity;
+              return `<div class="catalog-cart-item"><img src="/images/${product.image}.webp" alt=""><div><a href="/urun/${product.id}">${escapeCatalogHtml(product.name)}</a><p>${escapeCatalogHtml(entry.size)} · ${entry.quantity} adet</p></div><button data-cart-remove="${index}" aria-label="Ürünü kaldır">×</button></div>`;
+            })
+            .join("")
+        : '<p class="catalog-cart-empty">Sepetin boş.</p>';
+    const totalNode = document.querySelector(".catalog-cart-total strong");
+    if (totalNode) totalNode.textContent = `$${total.toFixed(2)}`;
+    document.querySelectorAll("[data-cart-remove]").forEach((button) =>
+      button.addEventListener("click", () => {
+        const next = readCatalogBag();
+        next.splice(Number(button.dataset.cartRemove), 1);
+        localStorage.setItem("kyft-bag", JSON.stringify(next));
+        renderCatalogCart();
+      }),
+    );
+  }
+  renderCatalogCart();
+</script>

@@ -1,0 +1,187 @@
+---
+import "../../styles/global.css";
+import "@fontsource/manrope/400.css";
+import "@fontsource/manrope/500.css";
+import "@fontsource/manrope/600.css";
+import "@fontsource/manrope/700.css";
+import "@fontsource/manrope/800.css";
+import "@fontsource/bodoni-moda/500-italic.css";
+import CatalogHeader from "../../components/CatalogHeader.astro";
+import CatalogFooter from "../../components/CatalogFooter.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import { categories, products } from "../../data/products";
+
+export function getStaticPaths() {
+  return categories.map((category) => ({
+    params: { slug: category.slug },
+    props: { category },
+  }));
+}
+const { category } = Astro.props;
+const categoryProducts = products.filter((product) =>
+  category.name === "Sweatshirt"
+    ? product.name.toLowerCase().includes("sweatshirt")
+    : product.category === category.name,
+);
+---
+
+<!doctype html>
+<html lang="tr">
+  <head
+    ><meta charset="UTF-8" /><meta
+      name="viewport"
+      content="width=device-width"
+    /><meta name="theme-color" content="#080808" /><meta
+      name="description"
+      content={`KYFT ${category.name} koleksiyonu.`}
+    /><title>{category.name} | KYFT</title><link
+      rel="icon"
+      href="/favicon.svg"
+    /></head
+  >
+  <body class="catalog-page">
+    <CatalogHeader />
+    <main class="catalog-layout wrap">
+      <aside class="catalog-rail">
+        <span>Giyim /</span><h1>{category.name}</h1><p>
+          {categoryProducts.length} ürün
+        </p>
+        <nav aria-label="Kategoriler">
+          {
+            categories.map((item) => (
+              <a
+                href={`/kategori/${item.slug}`}
+                class:list={{ active: item.slug === category.slug }}
+              >
+                {item.name}
+              </a>
+            ))
+          }
+        </nav>
+      </aside>
+      <section class="catalog-results" aria-labelledby="catalog-results-title">
+        <h2 id="catalog-results-title" class="sr-only">
+          {category.name} ürünleri
+        </h2>
+        <div class="catalog-toolbar">
+          <label
+            ><span class="sr-only">Ürün ara</span><input
+              id="catalog-search"
+              type="search"
+              placeholder="Ne aramıştınız?"
+            /></label
+          ><div
+            class="catalog-sort-options"
+            role="group"
+            aria-label="Ürünleri sırala"
+          >
+            <button class="active" data-sort="default">Öne çıkanlar</button
+            ><button data-sort="asc">Fiyat artan</button><button
+              data-sort="desc">Fiyat azalan</button
+            ><button data-sort="discount">İndirimdekiler</button><button
+              data-sort="new">Son eklenen</button
+            >
+          </div>
+        </div>
+        {
+          categoryProducts.length ? (
+            <div class="catalog-products">
+              {categoryProducts.map((product) => (
+                <ProductCard product={product} />
+              ))}
+            </div>
+          ) : (
+            <div class="category-empty">
+              <>
+                <p>Bu kategori hazırlanıyor.</p>
+                <a href="/#new-drop">New Drop’u keşfet</a>
+              </>
+            </div>
+          )
+        }
+        <p id="catalog-no-result" hidden>Aramana uygun ürün bulunamadı.</p>
+      </section>
+    </main>
+    <CatalogFooter />
+    <div id="catalog-toast" role="status"></div>
+    <script is:inline define:vars={{ products: categoryProducts }}>
+      window.categoryProducts = products;
+    </script>
+    <script>
+      const cards = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-product-card]"),
+      );
+      const grid = document.querySelector<HTMLElement>(".catalog-products");
+      const empty = document.querySelector<HTMLElement>("#catalog-no-result");
+      const search =
+        document.querySelector<HTMLInputElement>("#catalog-search");
+      const sortButtons = Array.from(
+        document.querySelectorAll<HTMLButtonElement>("[data-sort]"),
+      );
+      let direction = "default";
+      function render() {
+        const query = search?.value.trim().toLowerCase() || "";
+        const visible = cards.filter((card) =>
+          card.dataset.name?.includes(query),
+        );
+        visible.sort((a, b) =>
+          direction === "asc"
+            ? Number(a.dataset.price) - Number(b.dataset.price)
+            : direction === "desc"
+              ? Number(b.dataset.price) - Number(a.dataset.price)
+              : direction === "discount"
+                ? Number(b.dataset.discount) - Number(a.dataset.discount)
+                : direction === "new"
+                  ? cards.indexOf(b) - cards.indexOf(a)
+                  : cards.indexOf(a) - cards.indexOf(b),
+        );
+        cards.forEach((card) => (card.hidden = !visible.includes(card)));
+        visible.forEach((card) => grid?.append(card));
+        if (empty) empty.hidden = visible.length > 0;
+      }
+      search?.addEventListener("input", render);
+      sortButtons.forEach((button) =>
+        button.addEventListener("click", () => {
+          direction = button.dataset.sort || "default";
+          sortButtons.forEach((item) =>
+            item.classList.toggle("active", item === button),
+          );
+          render();
+        }),
+      );
+      document
+        .querySelectorAll<HTMLButtonElement>("[data-card-add]")
+        .forEach((button) =>
+          button.addEventListener("click", () => {
+            const id = button.dataset.cardAdd;
+            if (!id) return;
+            let bag: Array<{ id: string; size: string; quantity: number }> = [];
+            try {
+              bag = JSON.parse(localStorage.getItem("kyft-bag") || "[]");
+            } catch {}
+            if (!Array.isArray(bag)) bag = [];
+            const item = bag.find(
+              (entry) => entry.id === id && entry.size === "M",
+            );
+            if (item) item.quantity += 1;
+            else bag.push({ id, size: "M", quantity: 1 });
+            localStorage.setItem("kyft-bag", JSON.stringify(bag));
+            document
+              .querySelectorAll(".catalog-cart-count")
+              .forEach(
+                (node) =>
+                  (node.textContent = String(
+                    bag.reduce((sum, entry) => sum + entry.quantity, 0),
+                  )),
+              );
+            const toast = document.querySelector("#catalog-toast");
+            if (toast) {
+              toast.textContent = "Ürün M beden olarak sepete eklendi";
+              toast.classList.add("visible");
+              setTimeout(() => toast.classList.remove("visible"), 2200);
+            }
+          }),
+        );
+    </script>
+  </body>
+</html>

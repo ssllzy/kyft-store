@@ -1,0 +1,259 @@
+---
+import "../styles/global.css";
+import "@fontsource/manrope/400.css";
+import "@fontsource/manrope/500.css";
+import "@fontsource/manrope/600.css";
+import "@fontsource/manrope/700.css";
+import "@fontsource/manrope/800.css";
+import "@fontsource/bodoni-moda/500-italic.css";
+import CatalogHeader from "../components/CatalogHeader.astro";
+import CatalogFooter from "../components/CatalogFooter.astro";
+---
+
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#080808" />
+    <meta
+      name="description"
+      content="KYFT hesabına giriş yap veya yeni bir hesap oluştur."
+    />
+    <title>Hesabım | KYFT</title>
+    <link rel="icon" href="/favicon.svg" />
+  </head>
+  <body class="account-page">
+    <CatalogHeader />
+    <main>
+      <section class="account-hero" aria-labelledby="account-title">
+        <img
+          class="account-backdrop"
+          src="/images/account-store.webp"
+          alt="Siyah ve füme kıyafetlerin sergilendiği KYFT mağazası"
+        />
+        <div class="account-overlay" aria-hidden="true"></div>
+        <div class="account-panel">
+          <span class="account-eyebrow">KYFT / HESAP</span>
+          <h1 id="account-title">Tekrar hoş geldin.</h1>
+          <p class="account-intro">
+            Siparişlerini takip et, favorilerini sakla ve yeni ürünlere önce
+            ulaş.
+          </p>
+
+          <div class="account-tabs" role="tablist" aria-label="Hesap işlemleri">
+            <button
+              id="login-tab"
+              class="active"
+              role="tab"
+              aria-selected="true"
+              aria-controls="login-panel">Giriş yap</button
+            >
+            <button
+              id="register-tab"
+              role="tab"
+              aria-selected="false"
+              aria-controls="register-panel">Üye ol</button
+            >
+          </div>
+
+          <form id="login-panel" class="account-form" role="tabpanel">
+            <label>
+              <span>E-posta</span>
+              <input
+                name="email"
+                type="email"
+                autocomplete="email"
+                placeholder="ornek@mail.com"
+                required
+              />
+            </label>
+            <label>
+              <span>Şifre</span>
+              <span class="password-field">
+                <input
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  minlength="6"
+                  placeholder="En az 6 karakter"
+                  required
+                />
+                <button type="button" data-password-toggle>Göster</button>
+              </span>
+            </label>
+            <div class="account-form-meta">
+              <label class="remember-choice"
+                ><input type="checkbox" name="remember" /> Beni hatırla</label
+              >
+              <button type="button" id="forgot-password">Şifremi unuttum</button
+              >
+            </div>
+            <button class="account-submit" type="submit"
+              ><span>Giriş yap</span><span>→</span></button
+            >
+          </form>
+
+          <form id="register-panel" class="account-form" role="tabpanel" hidden>
+            <label>
+              <span>Ad soyad</span>
+              <input
+                name="name"
+                type="text"
+                autocomplete="name"
+                placeholder="Adın ve soyadın"
+                minlength="2"
+                required
+              />
+            </label>
+            <label>
+              <span>E-posta</span>
+              <input
+                name="email"
+                type="email"
+                autocomplete="email"
+                placeholder="ornek@mail.com"
+                required
+              />
+            </label>
+            <label>
+              <span>Şifre</span>
+              <span class="password-field">
+                <input
+                  name="password"
+                  type="password"
+                  autocomplete="new-password"
+                  minlength="6"
+                  placeholder="En az 6 karakter"
+                  required
+                />
+                <button type="button" data-password-toggle>Göster</button>
+              </span>
+            </label>
+            <label>
+              <span>Şifre tekrar</span>
+              <span class="password-field">
+                <input
+                  name="confirmation"
+                  type="password"
+                  autocomplete="new-password"
+                  minlength="6"
+                  placeholder="Şifreni tekrar yaz"
+                  required
+                />
+                <button type="button" data-password-toggle>Göster</button>
+              </span>
+            </label>
+            <label class="privacy-choice">
+              <input type="checkbox" name="privacy" required />
+              <span>Üyelik koşullarını ve KVKK metnini kabul ediyorum.</span>
+            </label>
+            <button class="account-submit" type="submit"
+              ><span>Hesap oluştur</span><span>→</span></button
+            >
+          </form>
+          <p class="account-status" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+    </main>
+    <CatalogFooter />
+
+    <script>
+      const tabs = {
+        login: document.querySelector<HTMLButtonElement>("#login-tab"),
+        register: document.querySelector<HTMLButtonElement>("#register-tab"),
+      };
+      const panels = {
+        login: document.querySelector<HTMLFormElement>("#login-panel"),
+        register: document.querySelector<HTMLFormElement>("#register-panel"),
+      };
+      const status = document.querySelector<HTMLElement>(".account-status");
+
+      function showPanel(next: "login" | "register") {
+        Object.entries(tabs).forEach(([key, tab]) => {
+          const selected = key === next;
+          tab?.classList.toggle("active", selected);
+          tab?.setAttribute("aria-selected", String(selected));
+        });
+        Object.entries(panels).forEach(([key, panel]) => {
+          if (panel) panel.hidden = key !== next;
+        });
+        if (status) status.textContent = "";
+        panels[next]?.querySelector<HTMLInputElement>("input")?.focus();
+      }
+
+      tabs.login?.addEventListener("click", () => showPanel("login"));
+      tabs.register?.addEventListener("click", () => showPanel("register"));
+
+      document
+        .querySelectorAll<HTMLButtonElement>("[data-password-toggle]")
+        .forEach((button) =>
+          button.addEventListener("click", () => {
+            const input = button
+              .closest(".password-field")
+              ?.querySelector<HTMLInputElement>("input");
+            if (!input) return;
+            const visible = input.type === "text";
+            input.type = visible ? "password" : "text";
+            button.textContent = visible ? "Göster" : "Gizle";
+          }),
+        );
+
+      panels.register?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const data = new FormData(panels.register!);
+        if (data.get("password") !== data.get("confirmation")) {
+          if (status) status.textContent = "Şifreler aynı olmalı.";
+          return;
+        }
+        const profile = {
+          name: String(data.get("name") || "").trim(),
+          email: String(data.get("email") || "")
+            .trim()
+            .toLowerCase(),
+        };
+        localStorage.setItem("kyft-profile", JSON.stringify(profile));
+        localStorage.setItem("kyft-session", JSON.stringify(profile));
+        if (status)
+          status.textContent = `Hoş geldin ${profile.name}. Hesabın oluşturuldu.`;
+        panels.register?.reset();
+      });
+
+      panels.login?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const data = new FormData(panels.login!);
+        const email = String(data.get("email") || "")
+          .trim()
+          .toLowerCase();
+        let profile: { name?: string; email?: string } | null = null;
+        try {
+          profile = JSON.parse(localStorage.getItem("kyft-profile") || "null");
+        } catch {}
+        localStorage.setItem(
+          "kyft-session",
+          JSON.stringify(profile?.email === email ? profile : { email }),
+        );
+        if (status)
+          status.textContent =
+            profile?.email === email
+              ? `Hoş geldin ${profile.name}. Giriş yapıldı.`
+              : "Giriş bilgilerin alındı. Hesabın açıldı.";
+      });
+
+      document
+        .querySelector("#forgot-password")
+        ?.addEventListener("click", () => {
+          const email = panels.login?.querySelector<HTMLInputElement>(
+            'input[name="email"]',
+          );
+          if (!email?.checkValidity()) {
+            email?.reportValidity();
+            return;
+          }
+          if (status)
+            status.textContent =
+              "Şifre yenileme bağlantısı hazırlanmış olarak işaretlendi.";
+        });
+    </script>
+  </body>
+</html>

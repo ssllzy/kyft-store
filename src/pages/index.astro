@@ -1,0 +1,382 @@
+---
+import "../styles/global.css";
+import "@fontsource/manrope/400.css";
+import "@fontsource/manrope/500.css";
+import "@fontsource/manrope/600.css";
+import "@fontsource/manrope/700.css";
+import "@fontsource/manrope/800.css";
+import "@fontsource/bodoni-moda/500-italic.css";
+import Icon from "../components/Icon.astro";
+import { products, featuredProducts } from "../data/products";
+---
+
+<!doctype html>
+<html lang="tr">
+  <head
+    ><meta charset="UTF-8" /><meta
+      name="viewport"
+      content="width=device-width"
+    /><meta name="theme-color" content="#080808" /><meta
+      name="description"
+      content="KYFT New Drop. Siyah, füme ve gri tonlarda yeni sezon sokak giyim parçalarını keşfet."
+    /><title>KYFT | New Drop 2026</title><link
+      rel="icon"
+      href="/favicon.svg"
+    /></head
+  >
+  <body>
+    <a href="#main" class="skip-link">İçeriğe geç</a>
+    <header class="header wrap flex items-center justify-between">
+      <a class="logo" href="#" aria-label="KYFT ana sayfa">kyft<span>®</span></a
+      >
+      <nav aria-label="Ana menü" class="desktop-nav flex items-center gap-9">
+        <a href="#new-drop">New Drop</a>
+        <details class="nav-menu">
+          <summary>Üst giyim</summary><div class="nav-submenu">
+            <a href="/kategori/t-shirt">T-shirt</a><a href="/kategori/gomlek"
+              >Gömlek</a
+            ><a href="/kategori/hoodie">Hoodie</a><a href="/kategori/sweatshirt"
+              >Sweatshirt</a
+            ><a href="/kategori/kazak">Kazak</a>
+          </div>
+        </details>
+        <details class="nav-menu">
+          <summary>Alt giyim</summary><div class="nav-submenu">
+            <a href="/kategori/pantolon">Pantolon</a><a href="/kategori/esofman"
+              >Eşofman</a
+            ><a href="/kategori/sort">Şort</a>
+          </div>
+        </details>
+      </nav>
+      <div class="flex items-center gap-6">
+        <button class="icon-button" id="search-open" aria-label="Ürün ara"
+          ><Icon name="search" /></button
+        ><a
+          class="icon-button"
+          href="/hesap"
+          aria-label="Üye girişi veya üyelik"><Icon name="user" /></a
+        ><button
+          id="cart-open"
+          class="bag-button flex items-center gap-2"
+          aria-label="Sepeti aç"
+          ><Icon name="shopping-bag" /><span id="cart-count">0</span></button
+        ><button
+          id="menu-toggle"
+          class="mobile-menu icon-button"
+          aria-label="Menüyü aç veya kapat"
+          aria-expanded="false"><Icon name="menu-2" /></button
+        >
+      </div>
+    </header>
+    <nav id="mobile-nav" aria-label="Mobil menü" hidden>
+      <a href="#new-drop">New Drop</a>
+      <a href="/hesap">Giriş yap / Üye ol</a>
+      <details class="nav-menu">
+        <summary>Üst giyim</summary><div class="nav-submenu">
+          <a href="/kategori/t-shirt">T-shirt</a><a href="/kategori/gomlek"
+            >Gömlek</a
+          ><a href="/kategori/hoodie">Hoodie</a><a href="/kategori/sweatshirt"
+            >Sweatshirt</a
+          ><a href="/kategori/kazak">Kazak</a>
+        </div>
+      </details>
+      <details class="nav-menu">
+        <summary>Alt giyim</summary><div class="nav-submenu">
+          <a href="/kategori/pantolon">Pantolon</a><a href="/kategori/esofman"
+            >Eşofman</a
+          ><a href="/kategori/sort">Şort</a>
+        </div>
+      </details>
+      <a href="#newsletter">Bize katıl</a>
+    </nav>
+    <main id="main">
+      <section class="video-intro" aria-label="Yeni sezon filmi">
+        <video
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          poster="/images/wes-grey-jogger.webp"
+        >
+          <source src="/new-drop-hero.mp4" type="video/mp4" />
+        </video>
+        <div class="video-shade" aria-hidden="true"></div>
+        <div class="video-copy wrap">
+          <span>KYFT / 2026</span>
+          <h1>Yeni sezon.<br />Yeni silüet.</h1>
+          <a href="#new-drop"
+            >New Drop’u keşfet <Icon name="arrow-down-right" size={18} /></a
+          >
+        </div>
+      </section>
+      <div class="showcase" id="showcase">
+        <div class="spotlight" aria-hidden="true"></div>
+        <section
+          class="hero wrap"
+          id="new-drop"
+          aria-labelledby="product-title"
+        >
+          <div class="hero-watermark" aria-hidden="true">NEW DROP</div>
+          <div class="product-info" data-product-copy>
+            <h2 id="product-title">Ağır Dokulu Tişört.</h2>
+            <p id="product-description" class="muted hero-description">
+              Sıradanlığın çok ötesinde.
+            </p>
+            <div class="hero-purchase">
+              <div class="hero-price-stack">
+                <s id="product-original-price">$62.00</s><p
+                  class="price"
+                  id="product-price"
+                >
+                  $48.00 <span>USD</span>
+                </p>
+              </div>
+              <button class="primary-button" id="hero-add"
+                >Sepete ekle <Icon name="plus" size={16} /></button
+              >
+            </div>
+            <div class="hero-options">
+              <div id="color-picker" class="color-picker">
+                <span>RENK</span>
+                <div role="group" aria-label="Ürün rengi">
+                  <button
+                    class="color-dot color-base selected"
+                    data-product-color="base"
+                    aria-label="Yıkanmış siyah"
+                    aria-pressed="true"></button>
+                  <button
+                    class="color-dot color-white"
+                    data-product-color="white"
+                    aria-label="Kırık beyaz"
+                    aria-pressed="false"></button>
+                </div>
+              </div>
+              <div class="size-choice">
+                <div class="size-heading flex justify-between">
+                  <span>BEDEN</span><button
+                    class="text-link"
+                    id="size-guide-open"
+                    >Rehber <Icon name="arrow-up-right" size={11} /></button
+                  >
+                </div>
+                <div
+                  class="sizes flex gap-2"
+                  role="group"
+                  aria-label="Ürün bedeni"
+                >
+                  {
+                    ["XS", "S", "M", "L", "XL"].map((size) => (
+                      <button
+                        data-size={size}
+                        aria-pressed={size === "M"}
+                        class:list={{ selected: size === "M" }}
+                      >
+                        {size}
+                      </button>
+                    ))
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-product-anchor" aria-hidden="true"></div>
+          <aside class="next-product">
+            <span>SIRADAKİ</span><button
+              id="next-product"
+              aria-label="Temel Kapüşonluyu önizle"
+              ><div class="next-image">
+                <img
+                  src="/images/hoodie.webp"
+                  alt="Yıkanmış siyah Temel Kapüşonlu"
+                  width="180"
+                  height="180"
+                />
+              </div><span id="next-name">Temel Kapüşonlu</span></button
+            >
+          </aside>
+          <div class="hero-bottom">
+            <span>NEW DROP / 2026</span><div
+              class="product-pagination"
+              aria-label="Öne çıkan ürün"
+            >
+              {
+                featuredProducts.map((product, index) => (
+                  <button
+                    class:list={{ active: index === 0 }}
+                    data-feature={index}
+                    aria-label={`${product.name} ürününü göster`}
+                    aria-pressed={index === 0}
+                  />
+                ))
+              }
+            </div>
+          </div>
+        </section>
+        <div class="floating-product" aria-live="polite">
+          <img
+            id="featured-image"
+            src="/images/tee.webp"
+            alt="KYFT oversize yıkanmış siyah ağır dokulu tişört"
+            width="1254"
+            height="1254"
+            fetchpriority="high"
+          />
+          <img
+            id="color-sweep-image"
+            src="/images/tee-white.webp"
+            alt=""
+            aria-hidden="true"
+            hidden
+          />
+          <div id="tracksuit-parts" hidden></div>
+        </div>
+      </div>
+    </main>
+    <footer class="wrap">
+      <div class="footer-top">
+        <div class="footer-links">
+          <div>
+            <h3>Kategoriler</h3><a href="#new-drop">New Drop</a><a
+              href="#new-drop">Çok satanlar</a
+            ><a href="/kategori/t-shirt">T-shirt</a><a href="/kategori/gomlek"
+              >Gömlek</a
+            ><a href="/kategori/hoodie">Hoodie</a><a href="/kategori/sweatshirt"
+              >Sweatshirt</a
+            ><a href="/kategori/kazak">Kazak</a><a href="/kategori/pantolon"
+              >Pantolon</a
+            ><a href="/kategori/esofman">Eşofman</a><a href="/kategori/sort"
+              >Şort</a
+            >
+          </div>
+          <div>
+            <h3>Destek</h3><button data-info="shipping">İade</button><button
+              data-info="shipping">Değişim</button
+            >
+          </div>
+          <div>
+            <h3>Kurumsal</h3><a
+              href="https://weswearshop.com/pages/vizyonumuz"
+              target="_blank"
+              rel="noreferrer">Hakkımızda</a
+            ><a
+              href="https://weswearshop.com/pages/sss"
+              target="_blank"
+              rel="noreferrer">S.S.S</a
+            ><a
+              href="https://weswearshop.com/pages/kisisel-verilerin-korunmasi-kanunu"
+              target="_blank"
+              rel="noreferrer">Kişisel Verilerin Korunması Kanunu</a
+            ><a
+              href="https://weswearshop.com/pages/mesafeli-satis-sozlesmesi"
+              target="_blank"
+              rel="noreferrer">Mesafeli Satış Sözleşmesi</a
+            ><a
+              href="https://weswearshop.com/pages/iptal-ve-iade-sartlari"
+              target="_blank"
+              rel="noreferrer">İptal ve İade Şartları</a
+            ><a
+              href="https://weswearshop.com/pages/kullanim-kosullari"
+              target="_blank"
+              rel="noreferrer">Kullanım Koşulları</a
+            >
+          </div>
+          <div id="newsletter">
+            <h3>Bize katıl</h3><p class="muted">
+              Yeni ürünlerden ilk sen haberdar ol.
+            </p><form id="newsletter-form">
+              <label for="email" class="sr-only">E-posta adresi</label><input
+                type="email"
+                id="email"
+                placeholder="E-posta adresin"
+                autocomplete="email"
+                required
+              /><button aria-label="Bültene kaydol"
+                ><Icon name="arrow-right" /></button
+              >
+            </form><p id="newsletter-status" role="status"></p>
+          </div>
+        </div>
+      </div><div class="footer-brand" aria-hidden="true">kyft®</div><div
+        class="footer-bottom"
+      >
+        <span>© {new Date().getFullYear()} KYFT. Tüm hakları saklıdır.</span
+        ><div>
+          <button data-info="privacy">Gizlilik</button><button data-info="terms"
+            >Koşullar</button
+          >
+        </div><span class="payments"
+          >VISA <b>mastercard</b> <b>PayPal</b> <span>Apple Pay</span></span
+        >
+      </div>
+    </footer>
+    <dialog id="cart-dialog" class="drawer" aria-labelledby="cart-title">
+      <div class="dialog-heading">
+        <h2 id="cart-title">Sepetin <span id="drawer-count"></span></h2><button
+          data-close
+          aria-label="Sepeti kapat"><Icon name="x" /></button
+        >
+      </div><div id="cart-items"></div><div class="cart-summary">
+        <div class="flex justify-between">
+          <span>Ara toplam</span><strong id="subtotal">$0.00</strong>
+        </div><p class="muted">
+          Kargo ücreti ödeme adımında hesaplanır.
+        </p><button id="checkout" class="primary-button"
+          >Ödemeye geç <Icon name="arrow-right" /></button
+        ><p id="checkout-status" role="status"></p>
+      </div>
+    </dialog>
+    <dialog id="search-dialog" aria-labelledby="search-title">
+      <div class="dialog-heading">
+        <h2 id="search-title">Aradığın parçayı bul.</h2><button
+          data-close
+          aria-label="Aramayı kapat"><Icon name="x" /></button
+        >
+      </div><form id="search-form">
+        <label for="search-input">Koleksiyonda ara</label><input
+          id="search-input"
+          type="search"
+          placeholder="Örneğin ağır dokulu tişört…"
+        /><button class="primary-button">Ara <Icon name="search" /></button>
+      </form>
+    </dialog>
+    <dialog id="info-dialog" aria-labelledby="info-title">
+      <div class="dialog-heading">
+        <h2 id="info-title"></h2><button data-close aria-label="Bilgiyi kapat"
+          ><Icon name="x" /></button
+        >
+      </div><div id="info-content"></div>
+    </dialog>
+    <dialog id="quick-dialog" aria-labelledby="quick-title">
+      <div class="dialog-heading">
+        <h2 id="quick-title">Bedenini seç.</h2><button
+          data-close
+          aria-label="Ürün seçeneklerini kapat"><Icon name="x" /></button
+        >
+      </div><img
+        id="quick-image"
+        src="/images/tee.webp"
+        alt="Yıkanmış siyah Ağır Dokulu Tişört"
+        width="250"
+        height="250"
+      /><p>
+        <span id="quick-color">Yıkanmış siyah</span> · <span id="quick-price"
+        ></span>
+      </p><label for="quick-size">Beden seç</label><select id="quick-size"
+        >{
+          ["XS", "S", "M", "L", "XL"].map((s) => (
+            <option selected={s === "M"}>{s}</option>
+          ))
+        }</select
+      ><button id="quick-confirm" class="primary-button"
+        >Sepete ekle <Icon name="plus" /></button
+      >
+    </dialog>
+    <div id="toast" role="status"></div>
+    <script is:inline define:vars={{ products, featuredProducts }}>
+      window.kyftProducts = products;
+      window.kyftFeaturedProducts = featuredProducts;
+    </script>
+    <script src="../scripts/store.ts"></script>
+  </body>
+</html>

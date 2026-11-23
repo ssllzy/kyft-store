@@ -1,0 +1,288 @@
+---
+import "../../styles/global.css";
+import "@fontsource/manrope/400.css";
+import "@fontsource/manrope/500.css";
+import "@fontsource/manrope/600.css";
+import "@fontsource/manrope/700.css";
+import "@fontsource/manrope/800.css";
+import "@fontsource/bodoni-moda/500-italic.css";
+import CatalogHeader from "../../components/CatalogHeader.astro";
+import CatalogFooter from "../../components/CatalogFooter.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import { products } from "../../data/products";
+
+export function getStaticPaths() {
+  return products.map((product) => ({
+    params: { id: product.id },
+    props: { product },
+  }));
+}
+const { product } = Astro.props;
+const originalPrice = Math.ceil(product.price * 1.28);
+const discount = Math.round((1 - product.price / originalPrice) * 100);
+const related =
+  products.find((item) => item.id !== product.id && item.bestseller) ??
+  products.find((item) => item.id !== product.id)!;
+const newest = products
+  .filter((item) => item.id !== product.id && item.isNew)
+  .slice(0, 4);
+const editorial = product.image.startsWith("wes-");
+const galleryImages = [
+  `/images/${product.image}.webp`,
+  `/images/${product.image}-detail-1.webp`,
+  `/images/${product.image}-detail-2.webp`,
+];
+---
+
+<!doctype html>
+<html lang="tr">
+  <head
+    ><meta charset="UTF-8" /><meta
+      name="viewport"
+      content="width=device-width"
+    /><meta name="theme-color" content="#080808" /><meta
+      name="description"
+      content={`${product.name}. ${product.description}`}
+    /><title>{product.name} | KYFT</title><link
+      rel="icon"
+      href="/favicon.svg"
+    /></head
+  >
+  <body class="product-page">
+    <CatalogHeader />
+    <main>
+      <section class="product-detail wrap">
+        <aside class="product-specs">
+          <span>Ürün açıklaması</span><h2>Ürün özellikleri</h2>
+          <dl>
+            <div><dt>Ürün</dt><dd>{product.category}</dd></div><div>
+              <dt>Kalıp</dt><dd>Boxy / rahat fit</dd>
+            </div><div><dt>Kumaş</dt><dd>%100 pamuk, tok dokulu</dd></div><div>
+              <dt>Beden aralığı</dt><dd>XS–XL</dd>
+            </div><div><dt>Renk</dt><dd>{product.color}</dd></div>
+          </dl>
+          <h2>Beden önerisi</h2><p>
+            50–70 kg: S<br />70–80 kg: M<br />80–90 kg: L<br />90 kg üzeri: XL
+          </p>
+          <div class="product-promises">
+            <p>1–2 iş gününde kargoya verilir.</p><p>
+              7 gün içinde kolay değişim ve iade.
+            </p><p>Güvenli ödeme.</p>
+          </div>
+        </aside>
+        <div class="product-gallery">
+          <div class="gallery-thumbs" role="group" aria-label="Ürün görselleri">
+            {
+              galleryImages.map((image, view) => (
+                <button
+                  data-gallery-view={view}
+                  class:list={{ active: view === 0 }}
+                  aria-label={`${view + 1}. ürün görünümü`}
+                  aria-pressed={view === 0}
+                >
+                  <img src={image} alt="" />
+                </button>
+              ))
+            }
+          </div>
+          <div
+            class:list={["gallery-stage", { editorial }]}
+            tabindex="0"
+            aria-label="Ürün galerisinde görsel değiştirmek için kaydır"
+          >
+            <img
+              id="gallery-main"
+              src={`/images/${product.image}.webp`}
+              alt={`${product.name}, ${product.color.toLowerCase()}`}
+              class="gallery-view-0"
+            />
+            <span class="gallery-index">01 / 03</span>
+          </div>
+        </div>
+        <aside class="product-buy">
+          <span class="product-label">KYFT / {product.category}</span><h1>
+            {product.name}
+          </h1><p>{product.description}</p>
+          <div class="product-price-large">
+            <span>-%{discount}</span><div>
+              <s>${originalPrice}.00</s><strong>${product.price}.00</strong>
+            </div>
+          </div>
+          <div class="product-sizes">
+            <span>Beden</span><div>
+              {
+                ["XS", "S", "M", "L", "XL"].map((size) => (
+                  <button
+                    data-detail-size={size}
+                    class:list={{ active: size === "M" }}
+                    aria-pressed={size === "M"}
+                  >
+                    {size}
+                  </button>
+                ))
+              }
+            </div>
+          </div>
+          <div class="product-cart-row">
+            <div class="quantity-picker">
+              <button data-quantity="-1" aria-label="Adedi azalt">−</button
+              ><span id="detail-quantity">1</span><button
+                data-quantity="1"
+                aria-label="Adedi artır">+</button
+              >
+            </div><button id="detail-add">Sepete ekle</button>
+          </div>
+        </aside>
+      </section>
+      <section class="product-strip featured-deal wrap">
+        <div class="strip-heading">
+          <h2>BU ÜRÜNLERDE SİZE ÖZEL EK İNDİRİM 🚨</h2>
+        </div><div class="strip-grid single">
+          <ProductCard product={related} showAdd={false} />
+        </div>
+      </section>
+      <section class="product-strip wrap">
+        <div class="strip-heading">
+          <span>KYFT / NEW DROP</span><h2>SEZONUN EN YENİLERİ</h2>
+        </div><div class="strip-grid">
+          {newest.map((item) => <ProductCard product={item} showAdd={false} />)}
+        </div>
+      </section>
+    </main>
+    <CatalogFooter />
+    <div id="catalog-toast" role="status"></div>
+    <script is:inline define:vars={{ product, products, galleryImages }}>
+      window.detailProduct = product;
+      window.allProducts = products;
+      window.galleryImages = galleryImages;
+    </script>
+    <script>
+      type DetailProduct = { id: string; name: string; color: string };
+      const product = (
+        window as typeof window & { detailProduct: DetailProduct }
+      ).detailProduct;
+      const galleryImages = (
+        window as typeof window & { galleryImages: string[] }
+      ).galleryImages;
+      const main = document.querySelector<HTMLImageElement>("#gallery-main");
+      const stage = document.querySelector<HTMLElement>(".gallery-stage");
+      const indexText = document.querySelector<HTMLElement>(".gallery-index");
+      const thumbs = Array.from(
+        document.querySelectorAll<HTMLButtonElement>("[data-gallery-view]"),
+      );
+      let view = 0,
+        size = "M",
+        quantity = 1;
+      function showView(next: number) {
+        view = (next + 3) % 3;
+        if (main) {
+          main.src = galleryImages[view];
+          main.className = `gallery-view-${view}`;
+        }
+        if (indexText) indexText.textContent = `0${view + 1} / 03`;
+        thumbs.forEach((button, index) => {
+          button.classList.toggle("active", index === view);
+          button.setAttribute("aria-pressed", String(index === view));
+        });
+      }
+      thumbs.forEach((button) =>
+        button.addEventListener("click", () =>
+          showView(Number(button.dataset.galleryView)),
+        ),
+      );
+      stage?.addEventListener(
+        "wheel",
+        (event) => {
+          const direction = event.deltaY > 0 ? 1 : -1;
+          if ((direction > 0 && view < 2) || (direction < 0 && view > 0)) {
+            event.preventDefault();
+            showView(view + direction);
+          }
+        },
+        { passive: false },
+      );
+      document
+        .querySelectorAll<HTMLButtonElement>("[data-detail-size]")
+        .forEach((button) =>
+          button.addEventListener("click", () => {
+            size = button.dataset.detailSize || "M";
+            document.querySelectorAll("[data-detail-size]").forEach((item) => {
+              item.classList.toggle("active", item === button);
+              item.setAttribute("aria-pressed", String(item === button));
+            });
+          }),
+        );
+      document
+        .querySelectorAll<HTMLButtonElement>("[data-quantity]")
+        .forEach((button) =>
+          button.addEventListener("click", () => {
+            quantity = Math.max(
+              1,
+              Math.min(10, quantity + Number(button.dataset.quantity)),
+            );
+            const output = document.querySelector("#detail-quantity");
+            if (output) output.textContent = String(quantity);
+          }),
+        );
+      document.querySelector("#detail-add")?.addEventListener("click", () => {
+        let bag: Array<{
+          id: string;
+          size: string;
+          color?: string;
+          quantity: number;
+        }> = [];
+        try {
+          bag = JSON.parse(localStorage.getItem("kyft-bag") || "[]");
+        } catch {}
+        if (!Array.isArray(bag)) bag = [];
+        const item = bag.find(
+          (entry) => entry.id === product.id && entry.size === size,
+        );
+        if (item) item.quantity += quantity;
+        else bag.push({ id: product.id, size, color: product.color, quantity });
+        localStorage.setItem("kyft-bag", JSON.stringify(bag));
+        document
+          .querySelectorAll(".catalog-cart-count")
+          .forEach(
+            (node) =>
+              (node.textContent = String(
+                bag.reduce((sum, entry) => sum + entry.quantity, 0),
+              )),
+          );
+        const toast = document.querySelector("#catalog-toast");
+        if (toast) {
+          toast.textContent = `${product.name} sepete eklendi`;
+          toast.classList.add("visible");
+          setTimeout(() => toast.classList.remove("visible"), 2200);
+        }
+      });
+      document
+        .querySelectorAll<HTMLButtonElement>("[data-card-add]")
+        .forEach((button) =>
+          button.addEventListener("click", () => {
+            const id = button.dataset.cardAdd;
+            if (!id) return;
+            let bag: Array<{ id: string; size: string; quantity: number }> = [];
+            try {
+              bag = JSON.parse(localStorage.getItem("kyft-bag") || "[]");
+            } catch {}
+            if (!Array.isArray(bag)) bag = [];
+            const item = bag.find(
+              (entry) => entry.id === id && entry.size === "M",
+            );
+            if (item) item.quantity += 1;
+            else bag.push({ id, size: "M", quantity: 1 });
+            localStorage.setItem("kyft-bag", JSON.stringify(bag));
+            document
+              .querySelectorAll(".catalog-cart-count")
+              .forEach(
+                (node) =>
+                  (node.textContent = String(
+                    bag.reduce((sum, entry) => sum + entry.quantity, 0),
+                  )),
+              );
+          }),
+        );
+    </script>
+  </body>
+</html>

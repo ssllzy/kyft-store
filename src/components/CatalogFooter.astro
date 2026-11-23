@@ -1,0 +1,72 @@
+<footer class="catalog-footer-main wrap" id="footer">
+  <div class="catalog-footer-grid">
+    <div>
+      <h2>Kategoriler</h2><a href="/#new-drop">New Drop</a><a
+        href="/kategori/t-shirt">T-shirt</a
+      ><a href="/kategori/gomlek">Gömlek</a><a href="/kategori/hoodie">Hoodie</a
+      ><a href="/kategori/sweatshirt">Sweatshirt</a><a href="/kategori/kazak"
+        >Kazak</a
+      ><a href="/kategori/pantolon">Pantolon</a><a href="/kategori/esofman"
+        >Eşofman</a
+      ><a href="/kategori/sort">Şort</a>
+    </div>
+    <div>
+      <h2>Destek</h2><a href="/#footer">İade</a><a href="/#footer">Değişim</a>
+    </div>
+    <div>
+      <h2>Kurumsal</h2><a
+        href="https://weswearshop.com/pages/vizyonumuz"
+        target="_blank"
+        rel="noreferrer">Hakkımızda</a
+      ><a
+        href="https://weswearshop.com/pages/sss"
+        target="_blank"
+        rel="noreferrer">S.S.S</a
+      ><a
+        href="https://weswearshop.com/pages/kisisel-verilerin-korunmasi-kanunu"
+        target="_blank"
+        rel="noreferrer">KVKK</a
+      ><a
+        href="https://weswearshop.com/pages/mesafeli-satis-sozlesmesi"
+        target="_blank"
+        rel="noreferrer">Mesafeli Satış Sözleşmesi</a
+      ><a
+        href="https://weswearshop.com/pages/iptal-ve-iade-sartlari"
+        target="_blank"
+        rel="noreferrer">İptal ve İade Şartları</a
+      ><a
+        href="https://weswearshop.com/pages/kullanim-kosullari"
+        target="_blank"
+        rel="noreferrer">Kullanım Koşulları</a
+      >
+    </div>
+    <div>
+      <h2>Bize katıl</h2><p>Yeni ürünlerden ilk sen haberdar ol.</p><form
+        class="catalog-newsletter"
+      >
+        <label class="sr-only" for="catalog-email">E-posta adresi</label><input
+          id="catalog-email"
+          type="email"
+          placeholder="E-posta adresin"
+          required
+        /><button aria-label="Bültene katıl">→</button>
+      </form><p class="catalog-newsletter-status" role="status"></p>
+    </div>
+  </div>
+  <div class="catalog-footer-bottom">
+    <span>© {new Date().getFullYear()} KYFT</span><span
+      >VISA · mastercard · TROY</span
+    >
+  </div>
+</footer>
+<script>
+  document
+    .querySelector(".catalog-newsletter")
+    ?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const status = document.querySelector<HTMLElement>(
+        ".catalog-newsletter-status",
+      );
+      if (status) status.textContent = "Listeye katıldın.";
+    });
+</script>

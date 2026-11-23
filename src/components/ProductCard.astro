@@ -1,0 +1,74 @@
+---
+import type { Product } from "../data/products";
+const { product, showAdd = true } = Astro.props as {
+  product: Product;
+  showAdd?: boolean;
+};
+const original = Math.ceil(product.price * 1.28);
+const discount = Math.round((1 - product.price / original) * 100);
+const cardPrimary =
+  product.id === "tee"
+    ? "/images/tee-model.webp"
+    : product.id === "wes-born-to-die"
+      ? "/images/source/born-1.webp"
+      : product.id === "wes-koi-shirt"
+        ? "/images/source/koi-model.webp"
+        : `/images/${product.image}.webp`;
+const cardHover =
+  product.id === "tee"
+    ? "/images/tee.webp"
+    : product.id === "wes-born-to-die"
+      ? "/images/source/born-product.webp"
+      : product.id === "wes-koi-shirt"
+        ? "/images/source/koi-product.webp"
+        : `/images/${product.image}-detail-1.webp`;
+---
+
+<article
+  class:list={[
+    "catalog-product-card",
+    { editorial: product.image.startsWith("wes-") },
+  ]}
+  data-product-card
+  data-name={`${product.name} ${product.category}`.toLowerCase()}
+  data-price={product.price}
+  data-discount={discount}
+>
+  <a
+    class="catalog-product-image"
+    href={`/urun/${product.id}`}
+    aria-label={`${product.name} detaylarını aç`}
+  >
+    <img
+      class="card-image-primary"
+      src={cardPrimary}
+      alt={`${product.name}, ${product.color.toLowerCase()}`}
+      width="720"
+      height="900"
+      loading="lazy"
+    />
+    <img
+      class="card-image-hover"
+      src={cardHover}
+      alt=""
+      width="720"
+      height="900"
+      loading="lazy"
+    />
+  </a>
+  {
+    showAdd && (
+      <button class="catalog-add" data-card-add={product.id}>
+        Sepete ekle <span>+</span>
+      </button>
+    )
+  }
+  <a class="catalog-product-copy" href={`/urun/${product.id}`}>
+    <h2>{product.name}</h2>
+    <div class="catalog-price">
+      <span>-%{discount}</span><s>${original}.00</s><strong
+        >${product.price}.00</strong
+      >
+    </div>
+  </a>
+</article>

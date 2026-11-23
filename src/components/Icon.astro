@@ -1,0 +1,16 @@
+---
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+const { name, size = 20 } = Astro.props;
+const svg = readFileSync(
+  resolve(`node_modules/@tabler/icons/icons/outline/${name}.svg`),
+  "utf8",
+);
+---
+
+<span
+  class="icon"
+  style={`width:${size}px;height:${size}px`}
+  aria-hidden="true"
+  set:html={svg}
+/>
